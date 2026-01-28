@@ -125,13 +125,13 @@ Latency includes:
 | API Framework   | FastAPI                    |
 | Embeddings      | sentence-transformers      |
 | Vector Store    | FAISS                      |
-| LLM             | HuggingFace QA Transformer |
+| LLM             | F-LAN T5 QA Transformer |
 | Validation      | Pydantic                   |
 | Background Jobs | FastAPI BackgroundTasks    |
 | Rate Limiting   | Custom in-memory limiter   |
 
 ---
-
+<p> <b>For answer generation, the system uses a lightweight open-source Large Language Model (FLAN-T5) to generate coherent, context-aware, and human-readable answers from the retrieved document chunks.</b> </p>
 ## 🔌 API Endpoints
 
 <pre style="background-color:#EBF5FB; padding:15px; border-radius:8px;">
