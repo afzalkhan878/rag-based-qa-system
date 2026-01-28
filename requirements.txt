@@ -1,0 +1,19 @@
+# Core ML
+torch
+sentence-transformers==2.2.2
+transformers>=4.30.0
+huggingface-hub<0.26.0
+
+# Backend
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# Vector & Retrieval
+numpy==1.24.3
+chromadb==0.4.22
+faiss-cpu==1.7.4
+
+# Document processing
+pypdf

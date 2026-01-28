@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env/
+
+# OS
+.DS_Store
+
+# HuggingFace / transformers cache
+.cache/
+huggingface/
+hf_cache/
+models/
+
+# FAISS / vector data
+*.faiss
+*.index
+vector_store/
+data/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/

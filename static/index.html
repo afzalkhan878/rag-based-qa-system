@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Intelligence Portal</title>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin: 0 0 8px 0;
+
+      /* Gradient Text with full compatibility */
+      background: linear-gradient(to right, #2563eb, #9333ea);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent; /* Fallback for older browsers */
+    }
+
+    header p { color: var(--text-muted); margin: 0; font-size: 1.1rem; }
+
+    .section { margin-bottom: 32px; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    /* File Dropzone Style */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: #fafafa;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--primary);
+      background: #f0f7ff;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Input & Interactive Elements */
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      background: #ffffff;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    button:active { transform: translateY(0); }
+    button:disabled {
+      background: var(--text-muted);
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Output Section */
+    .output-card {
+      margin-top: 24px;
+      background: #0f172a;
+      color: #f1f5f9;
+      padding: 24px;
+      border-radius: var(--radius);
+      min-height: 120px;
+      position: relative;
+      border-left: 4px solid var(--primary);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 20px;
+    }
+
+    /* Spinner Animation */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .success-text { color: #10b981; font-weight: 500; }
+    .error-text { color: #ef4444; font-weight: 500; }
+
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>RAG Knowledge Base</h1>
+      <p>Upload documents and extract insights instantly.</p>
+    </header>
+
+    <div class="section">
+      <div class="section-title"><i data-lucide="upload-cloud" size="16"></i> 1. Ingest Document</div>
+      <div class="upload-zone" id="dropzone">
+        <i data-lucide="file-text" size="40" style="color: var(--primary); margin-bottom: 12px;"></i>
+        <p id="fileNameDisplay" style="margin: 0; font-weight: 600; font-size: 1.1rem;">Select a file to index</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">PDF, Markdown, or Plain Text</p>
+        <input type="file" id="file" onchange="updateFileName()" />
+      </div>
+      <div class="input-group">
+        <button id="uploadBtn" onclick="upload()">
+          <i data-lucide="database" size="18"></i> Process & Index
+        </button>
+      </div>
+      <div id="uploadStatus" class="status"></div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border); margin: 32px 0;">
+
+    <div class="section">
+      <div class="section-title"><i data-lucide="message-circle" size="16"></i> 2. Semantic Query</div>
+      <div class="input-group">
+        <input id="question" type="text" placeholder="Ask a question about the content..." />
+        <button id="askBtn" onclick="ask()">
+          <i data-lucide="send" size="18"></i> Run Query
+        </button>
+      </div>
+      <div id="askStatus" class="status"></div>
+    </div>
+
+    <div class="output-card">
+      <pre id="output">System ready. Waiting for document upload...</pre>
+    </div>
+  </div>
+
+<script>
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  function updateFileName() {
+    const fileInput = document.getElementById("file");
+    const display = document.getElementById("fileNameDisplay");
+    if (fileInput.files.length > 0) {
+      display.textContent = fileInput.files[0].name;
+      display.style.color = "var(--primary)";
+    }
+  }
+
+  async function upload() {
+    const file = document.getElementById("file").files[0];
+    const status = document.getElementById("uploadStatus");
+    const btn = document.getElementById("uploadBtn");
+
+    if (!file) {
+      status.innerHTML = `<span class="error-text">Please select a file first.</span>`;
+      return;
+    }
+
+    btn.disabled = true;
+    status.innerHTML = `<div class="spinner"></div> <span style="margin-left:8px">Parsing and embedding document...</span>`;
+
+    const fd = new FormData();
+    fd.append("file", file);
+
+    try {
+      const response = await fetch("/upload", { method: "POST", body: fd });
+      if(response.ok) {
+        status.innerHTML = `<span class="success-text"><i data-lucide="check-circle" size="14"></i> Indexing successful!</span>`;
+        lucide.createIcons();
+      } else {
+        throw new Error();
+      }
+    } catch {
+      status.innerHTML = `<span class="error-text">Upload failed. Check server connection.</span>`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function ask() {
+    const q = document.getElementById("question").value.trim();
+    const status = document.getElementById("askStatus");
+    const out = document.getElementById("output");
+    const btn = document.getElementById("askBtn");
+
+    if (!q) {
+      status.innerHTML = `<span class="error-text">Please enter a question.</span>`;
+      return;
+    }
+
+    btn.disabled = true;
+    status.innerHTML = `<div class="spinner"></div> <span style="margin-left:8px">Searching vector space...</span>`;
+    out.style.opacity = "0.5";
+
+    try {
+      const res = await fetch("/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q })
+      });
+
+      const data = await res.json();
+      out.textContent = data.answer || JSON.stringify(data, null, 2);
+      status.innerHTML = `<span class="success-text">Done.</span>`;
+    } catch {
+      status.innerHTML = `<span class="error-text">Query failed.</span>`;
+      out.textContent = "Error communicating with backend.";
+    } finally {
+      btn.disabled = false;
+      out.style.opacity = "1";
+    }
+  }
+</script>
+</body>
+</html>
