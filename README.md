@@ -125,7 +125,7 @@ Latency includes:
 | API Framework   | FastAPI                    |
 | Embeddings      | sentence-transformers      |
 | Vector Store    | FAISS                      |
-| LLM             | F-LAN T5 QA Transformer |
+| LLM             | HuggingFace QA Transformer QA all-MiniLM-L6-v2|
 | Validation      | Pydantic                   |
 | Background Jobs | FastAPI BackgroundTasks    |
 | Rate Limiting   | Custom in-memory limiter   |
