@@ -7,20 +7,39 @@ Built with FastAPI, FAISS, and Transformer embeddings
 
 <hr>
 
-<h2 style="color:#2E86C1;">✨ Key Features</h2>
+## 🎯 Objective
+
+The objective of this project is to design and implement an **applied AI system** that allows users to upload documents and ask questions whose answers are generated using a **Retrieval-Augmented Generation (RAG)** approach.
+
+The system demonstrates practical use of **embeddings, vector similarity search, background jobs, and APIs**, while maintaining transparency and explainability.
+
+---
+
+## 🧠 What is RAG?
+
+**Retrieval-Augmented Generation (RAG)** combines:
+
+- 🔍 **Information Retrieval** (finding relevant document chunks)
+- 🤖 **Answer Generation** (using retrieved context)
+
+Instead of relying on parametric memory alone, the system grounds answers in **actual uploaded documents**, reducing hallucinations.
+
+---
+
+## ✨ Key Features
 
 <ul>
-  <li>📄 Upload PDF and TXT documents</li>
+  <li>📄 Upload <b>PDF</b> and <b>TXT</b> documents</li>
   <li>✂️ Intelligent chunking with overlap</li>
-  <li>🧠 Semantic search using FAISS</li>
+  <li>🧠 Semantic similarity search using <b>FAISS</b></li>
   <li>🤖 Context-aware question answering</li>
   <li>⚡ Background document ingestion</li>
   <li>🛡 Request validation and rate limiting</li>
 </ul>
 
-<hr>
+---
 
-<h2 style="color:#27AE60;">🏗 System Architecture</h2>
+## 🏗 System Architecture
 
 <pre style="background-color:#F4F6F6; padding:15px; border-radius:8px;">
 User
@@ -40,54 +59,90 @@ FastAPI API
        └── Answer Generation
 </pre>
 
-<hr>
+📌 See <b>architecture_diagram.png</b> for a visual diagram.
 
-<h2 style="color:#AF7AC5;">✂️ Chunking Strategy</h2>
+---
+
+## ✂️ Chunking Strategy
 
 <pre style="background-color:#FCF3CF; padding:15px; border-radius:8px;">
 Chunk Size   : ~2048 characters
 Chunk Overlap: ~512 characters
 </pre>
 
-<b>Why?</b>
+### Why this chunk size?
 
-<ul>
-  <li>Preserves semantic meaning</li>
-  <li>Avoids breaking important concepts</li>
-  <li>Improves retrieval accuracy</li>
-</ul>
+- Preserves semantic coherence
+- Avoids breaking important concepts
+- Balances context size and retrieval precision
+- Aligns with embedding model limitations
 
-<hr>
+This strategy improves retrieval quality while maintaining performance.
 
-<h2 style="color:#E74C3C;">❌ Retrieval Failure Case</h2>
+---
+
+## ❌ Retrieval Failure Case
 
 <pre style="background-color:#FADBD8; padding:15px; border-radius:8px;">
 Query:
 "How do you prevent overfitting in neural networks?"
 
-Failure:
-Document only explained what overfitting is,
-not how to prevent it.
+Observed Failure:
+The retrieved document only explained what overfitting is,
+but did not include prevention techniques.
 </pre>
 
-<b>Lesson:</b> Retrieval relevance ≠ intent satisfaction.
+### Insight
 
-<hr>
+Semantic similarity alone does not guarantee **intent satisfaction**.
+This highlights the limitation of retrieval-only approaches and motivates future improvements such as intent-aware retrieval.
 
-<h2 style="color:#1ABC9C;">📊 Metric Tracked</h2>
+---
+
+## 📊 Metric Tracked
 
 <pre style="background-color:#E8F8F5; padding:15px; border-radius:8px;">
-Metric: Query Latency (ms)
+Metric: Query Latency (milliseconds)
 
 Why?
-- Directly impacts UX
-- Indicates scalability
-- Easy to monitor and optimize
+- Directly affects user experience
+- Indicates system scalability
+- Easy to measure and optimize
 </pre>
 
-<hr>
+Latency includes:
 
-<h2 style="color:#D68910;">⚙️ Setup Instructions</h2>
+- Query embedding generation
+- Vector similarity search
+- Answer construction
+
+---
+
+## ⚙️ Technical Stack
+
+| Layer           | Technology                 |
+| --------------- | -------------------------- |
+| API Framework   | FastAPI                    |
+| Embeddings      | sentence-transformers      |
+| Vector Store    | FAISS                      |
+| LLM             | HuggingFace QA Transformer |
+| Validation      | Pydantic                   |
+| Background Jobs | FastAPI BackgroundTasks    |
+| Rate Limiting   | Custom in-memory limiter   |
+
+---
+
+## 🔌 API Endpoints
+
+<pre style="background-color:#EBF5FB; padding:15px; border-radius:8px;">
+POST /upload   → Upload PDF or TXT document
+POST /query    → Ask a question
+GET  /health   → System health check
+</pre>
+
+---
+
+## ⚙️ Setup & Usage
 
 <pre style="background-color:#1C2833; color:#ECF0F1; padding:15px; border-radius:8px;">
 git clone https://github.com/afzalkhan878/rag-based-qa-system.git
@@ -98,26 +153,61 @@ pip install -r requirements.txt
 uvicorn src.main:app --reload
 </pre>
 
-<hr>
+📍 Swagger UI: http://localhost:8000/docs
+📍 Health Check: http://localhost:8000/health
 
-<h2 style="color:#2980B9;">🔌 API Endpoints</h2>
+---
 
-<pre style="background-color:#EBF5FB; padding:15px; border-radius:8px;">
-POST /upload   → Upload documents
-POST /query    → Ask questions
-GET  /health   → System health
-</pre>
+## 🛡 Rate Limiting & Validation
 
-<hr>
+- Requests are validated using **Pydantic models**
+- A basic **rate limiter** restricts excessive API usage
+- Ensures system stability and fair access
 
-<h2 style="color:#7D3C98;">🎯 Conclusion</h2>
+---
 
-<p>
-This project demonstrates a complete and explainable RAG pipeline with
-thoughtful design choices, strong API structure, and measurable performance.
-</p>
+## 📌 Assignment Requirement Mapping
 
-<hr>
+<ul>
+  <li><b>Document Upload:</b> Supports PDF and TXT formats</li>
+  <li><b>Chunking:</b> Semantic chunking with overlap</li>
+  <li><b>Vector Store:</b> FAISS-based local storage</li>
+  <li><b>Retrieval:</b> Cosine similarity over embeddings</li>
+  <li><b>Answer Generation:</b> Transformer-based LLM</li>
+  <li><b>Background Jobs:</b> FastAPI BackgroundTasks</li>
+  <li><b>Validation:</b> Pydantic request models</li>
+  <li><b>Rate Limiting:</b> Custom in-memory limiter</li>
+</ul>
+
+---
+
+## ⚠️ Known Limitations
+
+<ul>
+  <li>Answer quality depends on document coverage</li>
+  <li>No explicit intent classification (definition vs how-to)</li>
+  <li>Local vector store is not distributed</li>
+</ul>
+
+---
+
+## 🚀 Future Improvements
+
+<ul>
+  <li>Intent-aware retrieval</li>
+  <li>Cross-encoder re-ranking</li>
+  <li>Persistent vector databases</li>
+  <li>Plug-in support for external LLMs (OpenAI / Ollama)</li>
+</ul>
+
+---
+
+## 🎯 Conclusion
+
+This project delivers a **complete, explainable, and modular RAG-based Question Answering system**.
+It demonstrates strong understanding of **chunking strategy, retrieval quality, API design, and metrics awareness**, while intentionally avoiding heavy frameworks for transparency.
+
+---
 
 <p align="center">
 <b>Author:</b> Md Afzal Khan<br>
