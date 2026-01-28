@@ -30,7 +30,7 @@ def health():
 def ingest_documents():
     """
     Ingest documents into the RAG system.
-    
+
     Request body:
     {
         "documents": [
@@ -41,28 +41,28 @@ def ingest_documents():
     """
     try:
         data = request.get_json()
-        
+
         if 'documents' not in data:
             return jsonify({'error': 'Missing documents field'}), 400
-        
+
         documents = data['documents']
-        
+
         # Validate documents
         for doc in documents:
             if 'id' not in doc or 'text' not in doc:
                 return jsonify({'error': 'Each document must have id and text'}), 400
-        
+
         start_time = time.time()
         num_chunks = rag_system.ingest_documents(documents)
         ingest_time = time.time() - start_time
-        
+
         return jsonify({
             'success': True,
             'num_documents': len(documents),
             'num_chunks_created': num_chunks,
             'ingest_time_seconds': ingest_time
         })
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -71,7 +71,7 @@ def ingest_documents():
 def query():
     """
     Query the RAG system.
-    
+
     Request body:
     {
         "query": "your question here",
@@ -81,21 +81,21 @@ def query():
     """
     try:
         data = request.get_json()
-        
+
         if 'query' not in data:
             return jsonify({'error': 'Missing query field'}), 400
-        
+
         query_text = data['query']
         top_k = data.get('top_k', 5)
         return_metrics = data.get('return_metrics', True)
-        
+
         # Execute query
         result = rag_system.query(
-            query_text, 
+            query_text,
             top_k=top_k,
             return_metrics=return_metrics
         )
-        
+
         # Log request
         request_log.append({
             'timestamp': time.time(),
@@ -103,9 +103,9 @@ def query():
             'top_k': top_k,
             'num_results': result['num_results']
         })
-        
+
         return jsonify(result)
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -115,13 +115,13 @@ def get_metrics():
     """Get system-wide metrics"""
     try:
         metrics_summary = rag_system.get_metrics_summary()
-        
+
         return jsonify({
             'system_metrics': metrics_summary,
             'total_requests': len(request_log),
             'recent_queries': request_log[-10:]  # Last 10 queries
         })
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
